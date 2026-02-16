@@ -16,12 +16,12 @@ class User:
         self.updated_at = datetime.now()
 
     def __str__(self):
-        return f"User(username={self.username}, role={self.role.name})"
+        return f"User: username={self.username}, role={self.role.name}"
 
     def __repr__(self):
-        return (f"User(id={self.id}, username={self.username}, password_hash={self.password_hash}, "
+        return (f"User: id={self.id}, username={self.username}, password_hash={self.password_hash}, "
                 f"email={self.email}, role={self.role.name}, tasks={self.tasks}, "
-                f"created_at={self.created_at}, updated_at={self.updated_at})")
+                f"created_at={self.created_at}, updated_at={self.updated_at}")
     
     # task methods
     def add_task(self, task: Task) -> None:
@@ -30,6 +30,10 @@ class User:
     def remove_task(self, task) -> None:
         if task in self.tasks:
             self.tasks.remove(task)
+
+    def list_tasks(self):
+        for task in self.tasks:
+            print(task)
 
     def task_by_id(self, task_id):
         return next((task for task in self.tasks if task.id == task_id), None)
