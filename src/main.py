@@ -1,4 +1,3 @@
-# Import your classes (you will create these files)
 from task import Task
 from user import User
 from utils import *
@@ -53,7 +52,6 @@ def main():
 
         else:
             print("Invalid option")
-
 
     print("\n=== End of Demo ===")
 
