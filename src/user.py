@@ -25,16 +25,27 @@ class User:
     
     # task methods
     def add_task(self, task: Task) -> None:
+        task.title = task.title.lower()
         self.tasks.append(task)
 
     def remove_task(self, task) -> None:
+        task.title = task.title.lower()
         if task in self.tasks:
             self.tasks.remove(task)
+    
+    def list_tasks(self):
+        if self.tasks:
+            print(f"Total tasks: {len(self.tasks)}")
+            for task in self.tasks:
+                print(task)
+        else:
+            print("No tasks yet!")
 
     def task_by_id(self, task_id):
         return next((task for task in self.tasks if task.id == task_id), None)
 
     def task_by_title(self, title):
+        title = title.lower()
         return next((task for task in self.tasks if task.title == title), None)
     
     # username and email methods

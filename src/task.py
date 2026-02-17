@@ -25,7 +25,7 @@ class Task:
 
     def mark_done(self) -> None:
         self.status = Status.Done
-        self.update_at = datetime.now()
+        self.updated_at = datetime.now()
 
     # ------------------------
     # Read-only user_id property
