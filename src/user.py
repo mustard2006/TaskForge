@@ -51,6 +51,8 @@ class User:
     def task_by_title(self, title):
         title = title.lower()
         return next((task for task in self.tasks if task.title == title), None)
+
+    #def save_tasks(self, filename="tasks.json"):   
     
     # username and email methods
     @property
