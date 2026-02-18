@@ -1,14 +1,18 @@
-from task import Task
-from user import User
+from crud import *
 from utils import *
-
+from database import SessionLocal, engine, Base
+from models import User, Task
 
 def main():
-    print("=== PyTasks Demo ===")
+    Base.metadata.create_all(bind=engine) # create tables
+    db = SessionLocal()
 
-    # Create users
-    user = User("user", "user@user.com", "random_hash", Role.User)
-    user.load_tasks()  # Load saved tasks from JSON
+    # Get or create user
+    user = get_user_by_username(db, "user")
+    if not user:
+        user = create_user(db, "user", "user@gmail.com", "random_hash", Role.User)
+
+    print("=== PyTasks Demo ===")
 
     while True:
         print("\n1. Add task")
@@ -19,7 +23,7 @@ def main():
         command = input(">>> ").strip().lower()
 
         if command == "bye" or command == "exit":
-            user.save_tasks()  # Save before exiting
+            
             print("Goodbye!")
             break
 
@@ -27,24 +31,26 @@ def main():
             title = input("Enter title >>> ").strip().lower()
             desc = input("Enter description >>> ").strip().lower()
 
-            task = Task(user.id, title, desc)
-            user.add_task(task)
-            user.save_tasks()
+            task = create_task(db, title, desc, user.id)
+            
             print("Task added successfully!")
         
         elif command == "2":
             title = input("Enter task title to mark done >>> ").strip().lower()
-            task = user.task_by_title(title)
+            task = mark_task_done(db, title)
             if task:
-                task.mark_done()
-                user.save_tasks()
                 print(f"Task '{task.title}' marked done!")
             else:
                 print("Task not found")
             
         elif command == "3":
             print("<=========== Task List ===========>")
-            user.list_tasks()
+            tasks = get_tasks(db, user.id)
+            if tasks:
+                for t in tasks:
+                    print(t)
+            else:
+                print("No tasks yet!")
             print("<=================================>")
 
         else:
@@ -52,6 +58,7 @@ def main():
 
     print("\n=== End of Demo ===")
 
+    db.close()
 
 # This ensures main() runs only when this file is executed directly
 if __name__ == "__main__":
