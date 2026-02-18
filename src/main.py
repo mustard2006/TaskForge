@@ -8,13 +8,7 @@ def main():
 
     # Create users
     user = User("user", "user@user.com", "random_hash", Role.User)
-    
-    # __str__ for user
-    #print(user)
-
-    # __repr__ for debug
-    #print(repr(user))
-
+    user.load_tasks()  # Load saved tasks from JSON
 
     while True:
         print("\n1. Add task")
@@ -25,6 +19,7 @@ def main():
         command = input(">>> ").strip().lower()
 
         if command == "bye" or command == "exit":
+            user.save_tasks()  # Save before exiting
             print("Goodbye!")
             break
 
@@ -34,6 +29,7 @@ def main():
 
             task = Task(user.id, title, desc)
             user.add_task(task)
+            user.save_tasks()
             print("Task added successfully!")
         
         elif command == "2":
@@ -41,6 +37,7 @@ def main():
             task = user.task_by_title(title)
             if task:
                 task.mark_done()
+                user.save_tasks()
                 print(f"Task '{task.title}' marked done!")
             else:
                 print("Task not found")

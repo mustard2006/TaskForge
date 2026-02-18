@@ -3,6 +3,10 @@ import uuid
 from utils import *
 from task import *
 from typing import List
+import json
+from pathlib import Path
+
+TASKS_FILE = Path(__file__).parent / "tasks.json"
 
 class User:
     def __init__(self, username, email, password_hash, role):
@@ -23,13 +27,31 @@ class User:
                 f"email={self.email}, role={self.role.name}, tasks={self.tasks}, "
                 f"created_at={self.created_at}, updated_at={self.updated_at}")
     
+    def save_tasks(self):
+        data = [task.to_dict() for task in self.tasks]
+        with open(TASKS_FILE, "w") as f:
+            return json.dump(data, f, indent=2)
+
+    def load_tasks(self):
+        try:
+            with open(TASKS_FILE, "r") as f:
+                data = json.load(f)
+                self.tasks = [Task.from_dict(t) for t in data]
+        except FileNotFoundError:
+            self.tasks = []
+        except json.JSONDecodeError:
+            print("Corrupted file, starting fresh")
+            self.tasks = []
+        except PermissionError:
+            print("Cannot read file - check permissions")
+            raise
+
     # task methods
     def add_task(self, task: Task) -> None:
         task.title = task.title.lower()
         self.tasks.append(task)
 
     def remove_task(self, task) -> None:
-        task.title = task.title.lower()
         if task in self.tasks:
             self.tasks.remove(task)
     
@@ -40,10 +62,6 @@ class User:
                 print(task)
         else:
             print("No tasks yet!")
-
-    def list_tasks(self):
-        for task in self.tasks:
-            print(task)
 
     def task_by_id(self, task_id):
         return next((task for task in self.tasks if task.id == task_id), None)
